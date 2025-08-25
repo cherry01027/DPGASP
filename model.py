@@ -13,7 +13,7 @@ with open("pinyin", 'r', encoding='utf-8', errors='ignore') as f:
         pinyin_list.append(line)
 
 def is_valid_password(password):
-    # 检查密码是否包含小写字母、大写字母、数字和特殊字符
+    # Check if the password contains lowercase letters, uppercase letters, numbers, and special characters
     has_lowercase = any(char.islower() for char in password)
     has_uppercase = any(char.isupper() for char in password)
     has_digit = any(char.isdigit() for char in password)
@@ -25,22 +25,22 @@ with open("__randompsw__", 'r', encoding='utf-8', errors='ignore') as f:
 
 found = False
 while not found:
-    # 随机选择30行数据
+    # Randomly select 30 rows of data
     selected_lines = random.sample(lines, 30)
     passwords = []
     for line in selected_lines:
         path = line.split('----')
         if len(path) > 1:
             passwords.append(path[1].strip())
-    # 将密码连接成一个整体字符串
+    # Concatenate passwords into a complete string
     combined_passwords = ''.join(passwords)
-    # 检查整体字符串是否满足条件
+    # Check whether the entire string meets the conditions
     if is_valid_password(combined_passwords):
         found = True
         for line in selected_lines:
             user = []
             path = line.split('----')
-            # 获取第六个和第七个数据
+            # Obtain the sixth and seventh data
             password = path[1]
             user.append(password)
             name = path[2]
@@ -50,31 +50,31 @@ while not found:
             user.append(birthday)
             seed.append(user)
 
-# 姓名形式的转换
+# Conversion of name formats
 def name_transform(name):
     '''
-    emample:张三 --> 1 zhangsan 2 zs 3 zhangs 4 zsan 5 zhang 6 san
-    :param name:姓名, 将姓名转化不同的模式
-    :return:只要匹配上其中一种，就认为该口令和名称匹配的上
+    emample:zhangsan --> 1 zhangsan 2 zs 3 zhangs 4 zsan 5 zhang 6 san
+    :param name:Name, convert name into different patterns
+    :return:As long as one of them matches, it is considered that the password and name match.
     '''
     name_list = list()
-    # 1 姓名全称 zhengyifeng
-    p = Pinyin()  # 创建Pinyin实例,将汉字转化为拼音
+    # 1 full name: zhengyifeng
+    p = Pinyin()  # Create a Pinyin instance to convert Chinese characters into Pinyin
     name = p.get_pinyin(name)  # zheng-yi-feng
     s = name.split('-')  # ['zheng','yi','feng']
     name1 = ''.join([i.lower() for i in s])
-    # 2 姓名的首字母 zyf
+    # 2 first letter of name: zyf
     name2 = ''.join([i[0].lower() for i in s])
-    # 3 姓氏 zheng
+    # 3 family name: zheng
     name3 = s[0]
-    # 4 名字 yifeng
+    # 4 given name: yifeng
     name4 = ''.join([i.lower() for i in s[1::]])
-    # 5 姓名首字母ZYF
+    # 5 full name with its 1st letter capitalized: ZYF
     name5 = ''.join([i.upper() for i in name2])  # A5
-    # 6 姓氏+名字的首字母 zhengyf
+    # 6 family name+the 1st letter of the given name: zhengyf
     a1 = ''.join([i[0].lower() for i in s[1::]])
     name6 = name3 + a1
-    # 7 姓氏并且首字母大写 Zheng
+    # 7 family name with its 1st letter capitalized: Zheng
     a2 = name3[0].upper()
     a3 = name3[1::].lower()
     name7 = a2 + a3
@@ -82,7 +82,7 @@ def name_transform(name):
     name_list.extend([name1, name2, name3, name4, name5, name6, name7])
     return name_list
 
-# 生日形式的转换
+# Conversion of birthday formats
 def convert_to_lunar(birthday):
     year = int(birthday[:4])
     month = int(birthday[4:6])
@@ -100,9 +100,9 @@ def birthday_transform(birthday):
     year = birthday[0:4]
     month = birthday[4:6]
     day = birthday[6:8]
-    # 1 年月日  19870504
+    # 1 YYYYMMDD:  19870504
     bir1 = year + month + day  # B1
-    # 2 年月日(月日缩写) 198754
+    # 2 YYYYMD: 198754
     if int(month[:1]) != 0 and int(day[:1]) == 0:
         bir2 = year + month + day[1:2]  # B2
     elif int(month[:1]) == 0 and int(day[:1]) != 0:
@@ -111,9 +111,9 @@ def birthday_transform(birthday):
         bir2 = year + month[1:2] + day[1:2]
     else:
         bir2 = year + month + day
-    # 3 月日年  05041987
+    # 3  MMDDYYYY: 05041987
     bir3 = month + day + year  # B3
-    # 4 月日年(月日缩写)  541987
+    # 4 MDYYYY: 541987
     if int(month[:1]) != 0 and int(day[:1]) == 0:
         bir4 = month + day[1:2] + year  # B4
     elif int(month[:1]) == 0 and int(day[:1]) != 0:
@@ -122,9 +122,9 @@ def birthday_transform(birthday):
         bir4 = month[1:2] + day[1:2] + year
     else:
         bir4 = month + day + year
-    # 5 日月年  04051987
+    # 5 MMDDYYYY: 04051987
     bir5 = day + month + year  # B5
-    # 6 日月年(日月缩写) 451987
+    # 6 DMYYYY: 451987
     if int(month[:1]) != 0 and int(day[:1]) == 0:
         bir6 = day[1:2] + month + year  # B6
     elif int(month[:1]) == 0 and int(day[:1]) != 0:
@@ -133,9 +133,9 @@ def birthday_transform(birthday):
         bir6 = day[1:2] + month[1:2] + year  # B6
     else:
         bir6 = day + month + year
-    # 7 月日 0504
+    # 7 MMDD: 0504
     bir7 = month + day
-    # 8 月日缩写 54
+    # 8 MD: 54
     if month[:1] != '0' and day[:1] == '0':
         bir8 = month + day[1:2]
     elif month[:1] == '0' and day[:1] != '0':
@@ -144,25 +144,25 @@ def birthday_transform(birthday):
         bir8 = month[1:2] + day[1:2]
     else:
         bir8 = month + day
-    # 9年份 1987
+    # 9 YYYY: 1987
     bir9 = year  # B8
-    # 10 年月 198705
+    # 10 YYYYMM: 198705
     bir10 = year + month  # B9
-    # 11 年+月缩写
+    # 11 YYYYM
     if month[:1] == '0':
         bir11 = year + month[1:2]
     else:
         bir11 = year + month
-    # 12 月+年 051987
+    # 12 MMYYYY: 051987
     bir12 = month + year  # B10
-    # 13 月缩写+年 51987
+    # 13 MYYYY: 51987
     if month[:1] == '0':
         bir13 = month[1:2] + year  # B11
     else:
         bir13 = month + year
-    # 14 年份后两位+月日 870504
+    # 14 YYMMDD: 870504
     bir14 = year[2:4] + month + day  # B12
-    # 15 年份后两位+月日缩写 8754
+    # 15 YYMD: 8754
     if month[:1] != '0' and day[:1] == '0':
         bir15 = year[2:4] + month + day[1:2]
     elif month[:1] == '0' and day[:1] != '0':
@@ -171,9 +171,9 @@ def birthday_transform(birthday):
         bir15 = year[2:4] + month[1:2] + day[1:2]
     else:
         bir15 = year[2:4] + month + day
-    # 16 月日+年份后两位 050487
+    # 16 MMDDYY: 050487
     bir16 = month + day + year[2:4]  # B14
-    # 17 月日缩写+年份后两位 5487
+    # 17 MDYY: 5487
     if month[:1] != '0' and day[:1] == '0':
         bir17 = month + day[1:2] + year[2:4]
     elif month[:1] == '0' and day[:1] != '0':
@@ -182,9 +182,9 @@ def birthday_transform(birthday):
         bir17 = month[1:2] + day[1:2] + year[2:4]
     else:
         bir17 = month + day + year[2:4]
-    # 18 日月+年份后两位 040587
+    # 18 DDMMYY: 040587
     bir18 = day + month + year[2:4]  # B16
-    # 19 日月缩写+年份后两位 4587
+    # 19 DMYY: 4587
     if month[:1] != '0' and day[:1] == '0':
         bir19 = day[1:2] + month + year[2:4]  # B17
     elif month[:1] == '0' and day[:1] != '0':
@@ -193,7 +193,7 @@ def birthday_transform(birthday):
         bir19 = day[1:2] + month[1:2] + year[2:4]  # B17
     else:
         bir19 = day + month + year[2:4]
-    # 转换为阴历生日
+    # Convert to lunar birthday
     year1 = lunar_birthday[0:4]
     month1 = lunar_birthday[4:6]
     day1 = lunar_birthday[6:8]
@@ -278,22 +278,22 @@ def birthday_transform(birthday):
                           bir34, bir35, bir36, bir37, bir38])
     return birthday_list
 
-# 长度特征提取
+# Feature extraction of length
 def length_extraction(string, length_count):
     item_length = len(string)
-    # 如果长度在字典中已经存在，增加计数
+    # If the length already exists in the dictionary, increase the count
     if item_length in length_count:
         length_count[item_length] += 1
-    # 否则，将长度添加到字典中，并设置计数为1
+    # Otherwise, add the length to the dictionary and set the count to 1
     else:
         length_count[item_length] = 1
     return length_count
 
-# 结构数量特征提取
+# Feature extraction of structure numbers
 def strucount_extraction(string, structure_count):
     structure_types = set()
     for char in string:
-        # 判断字符的类型，并添加到集合中
+        # Determine the type of character and add it to the set
         if char.islower():
             structure_types.add('lowercase')
         elif char.isupper():
@@ -305,12 +305,12 @@ def strucount_extraction(string, structure_count):
     item_structure = len(structure_types)
     if item_structure in structure_count:
         structure_count[item_structure] += 1
-    # 否则，将长度添加到字典中，并设置计数为1
+    # Otherwise, add the structure number to the dictionary and set the count to 1
     else:
         structure_count[item_structure] = 1
     return structure_count
 
-# 结构特征提取
+# Feature extraction of structure
 def structure_extraction(string, structure_dict):
     L_dict = {}
     D_dict = {}
@@ -362,7 +362,7 @@ def structure_extraction(string, structure_dict):
             structure_dict['U'][key] = U_dict[key]
     return structure_dict
 
-# 姓名特征提取
+# Feature extraction of name
 def name_extraction(string, name, name_dict):
     name_contains = False
     name_list = name_transform(name)
@@ -378,7 +378,7 @@ def name_extraction(string, name, name_dict):
         name_dict[0] += 1
     return name_dict
 
-# 生日特征提取
+# Feature extraction of birthday
 def birthday_extraction(string, birthday, birthday_dict):
     birthday_contains = False
     birthday_list = birthday_transform(birthday)
@@ -394,7 +394,7 @@ def birthday_extraction(string, birthday, birthday_dict):
         birthday_dict[0] += 1
     return birthday_dict
 
-# 拼音特征提取
+# Feature extraction of pinyin
 def pinyin_extraction(string, pinyin_list, pinyin_dict):
     pinyin_contains = False
     for i in pinyin_list:
@@ -409,7 +409,7 @@ def pinyin_extraction(string, pinyin_list, pinyin_dict):
         pinyin_dict[0] += 1
     return pinyin_dict
 
-# 大写字母特征提取
+# Feature extraction of uppercase
 def uppercase_extraction(string, upper_dict):
     upper_contains = False
     for char in string:
@@ -438,7 +438,7 @@ def symbol_extraction(string, symbol_dict):
         symbol_dict[0] += 1
     return symbol_dict
 
-# 初始化空字典
+# Initialize an empty dictionary
 length_count = {}
 structure_count = {}
 structure_dict = {'L': {}, 'D': {}, 'S': {}, 'U': {}}
@@ -458,13 +458,13 @@ for item in seed:
     symbol_dict = symbol_extraction(item[0], symbol_dict)
 
 def calculate_gini(data_dict):
-    # 从字典中提取值列表
+    # Extract a list of values from a dictionary
     values = list(data_dict.values())
-    # 计算数据集的总和
+    # Calculate the sum of the dataset
     total = sum(values)
-    # 计算每个类别的比例
+    # Calculate the proportion of each category
     proportions = [value / total for value in values]
-    # 计算 Gini 系数
+    # Calculate Gini index
     gini = 1 - sum(p ** 2 for p in proportions)
     return gini
 
@@ -484,17 +484,16 @@ def length_strucount_policy(string):
         return string
     else:
         min_value = float('inf')
-        # 找出键比item_structure大的项中值最小的键，计算差值
         difference = 0
         for key in length_count.keys():
             if 8 <= key <= 12 and int(key) > lens:
-                # 如果找到的值比当前最小值小，则更新最小值
+                # If the value find is smaller than the current minimum value, update the minimum value.
                 if length_count[key] < min_value:
                     difference = int(key) - lens
                     min_value = length_count[key]
     structure_types = set()
     for char in string:
-        # 判断字符的类型，并添加到集合中
+        # Determine the type of character and add it to the set
         if char.islower():
             structure_types.add('L')
         elif char.isupper():
@@ -505,33 +504,30 @@ def length_strucount_policy(string):
             structure_types.add('S')
     item_structure = len(structure_types)
     min_value = float('inf')
-    # 找出键比item_structure大的项中值最小的键，计算差值
     differ = 0
     for key in structure_count.keys():
         if int(key) > item_structure:
-            # 如果找到的值比当前最小值小，则更新最小值
+            # If the value find is smaller than the current minimum value, update the minimum value.
             if structure_count[key] < min_value:
                 differ = int(key) - item_structure
                 min_value = structure_count[key]
 
-    # 记录string中未出现的结构类型
+    # Record the structure types that do not appear in the string
     missing_types = {'L', 'U', 'D', 'S'} - structure_types
     if difference > 0:
         selected_types = random.sample(missing_types, min(differ, len(missing_types)))
     else:
         selected_types = []
-    # 从selected_types中的键对应的子字典中找到最小的键
-    min_keys = ""  # 用于存储每个str_type中最小值的键的字符串形式
-    for str_type in selected_types:  # 遍历selected_types列表中的每个元素str_type
-        # 使用列表推导式找到结构字典中difference个值最小的键
+    # Find the smallest key from the sub dictionary corresponding to the key in selected_types
+    min_keys = ""  # The string form used to store the minimum value of the key in each str_type
+    for str_type in selected_types:  # Iterate through each element str_type in the selected_types list.
         min_keys_in_type = sorted(structure_dict[str_type].keys(), key=lambda x: structure_dict[str_type][x])[
                            :difference]
-        # 将这些键转换为字符串形式并附加到min_keys字符串末尾
         min_keys += "".join(map(str, min_keys_in_type))
 
-    # 将最小键添加到字符串的前面或后面
+    # Add the smallest key to the front or end of the string.
     if min_keys is not None:
-        if random.choice([True, False]):  # 随机选择添加到前面还是后面
+        if random.choice([True, False]):  # Randomly select and add
             string = min_keys + string
         else:
             string = string + min_keys
@@ -549,17 +545,14 @@ def length_name_policy(name, string):
         min_length = sorted_lengths[0]
         if lens > min_length:
             difflen = lens - min_length
-            # 在birthday_list中寻找长度为差值的字符串
             candidates = [name for name in name_list if len(name) == difflen]
             if candidates:
-                # 找到了长度为差值的字符串，随机选择一个加到string的前面或者后面
                 chosen_name = random.choice(candidates)
                 position = random.choice(["before", "after"])
                 if position == "before":
                     return chosen_name + string
                 else:
                     return string + chosen_name
-            # 若没有找到，则随机选择一个name_list中的字符串加到string的前面或者后面
             chosen_name = random.choice(name_list)
             position = random.choice(["before", "after"])
             if position == "before":
@@ -570,14 +563,13 @@ def length_name_policy(name, string):
             diff = min_length - lens
             candidates = [name for name in name_list if len(name) == diff]
             if candidates:
-                # 找到了长度为差值的字符串，随机选择一个加到string的前面或者后面
                 chosen_name = random.choice(candidates)
                 position = random.choice(["before", "after"])
                 if position == "before":
                     return chosen_name + string
                 else:
                     return string + chosen_name
-            # 若没有找到，则随机选择一个birthday_list中的字符串加到string的前面或者后面
+
             chosen_name = random.choice(name_list)
             position = random.choice(["before", "after"])
             if position == "before":
@@ -636,17 +628,14 @@ def length_birthday_policy(birthday, string):
         min_length = sorted_lengths[0]
         if lens > min_length:
             difflen = lens - min_length
-            # 在birthday_list中寻找长度为差值的字符串
             candidates = [birthday for birthday in birthday_list if len(birthday) == difflen]
             if candidates:
-                # 找到了长度为差值的字符串，随机选择一个加到string的前面或者后面
                 chosen_birthday = random.choice(candidates)
                 position = random.choice(["before", "after"])
                 if position == "before":
                     return chosen_birthday + string
                 else:
                     return string + chosen_birthday
-            # 若没有找到，则随机选择一个birthday_list中的字符串加到string的前面或者后面
             chosen_birthday = random.choice(birthday_list)
             position = random.choice(["before", "after"])
             if position == "before":
@@ -657,14 +646,12 @@ def length_birthday_policy(birthday, string):
             diff = min_length - lens
             candidates = [birthday for birthday in birthday_list if len(birthday) == diff]
             if candidates:
-                # 找到了长度为差值的字符串，随机选择一个加到string的前面或者后面
                 chosen_birthday = random.choice(candidates)
                 position = random.choice(["before", "after"])
                 if position == "before":
                     return chosen_birthday + string
                 else:
                     return string + chosen_birthday
-            # 若没有找到，则随机选择一个birthday_list中的字符串加到string的前面或者后面
             chosen_birthday = random.choice(birthday_list)
             position = random.choice(["before", "after"])
             if position == "before":
@@ -722,17 +709,14 @@ def length_pinyin_policy(string):
         min_length = sorted_lengths[0]
         if lens > min_length:
             difflen = lens - min_length
-            # 在pinyin_list中寻找长度为差值的字符串
             candidates = [pinyin for pinyin in pinyin_list if len(pinyin) == difflen]
             if candidates:
-                # 找到了长度为差值的字符串，随机选择一个加到string的前面或者后面
                 chosen_pinyin = random.choice(candidates)
                 position = random.choice(["before", "after"])
                 if position == "before":
                     return chosen_pinyin + string
                 else:
                     return string + chosen_pinyin
-            # 若没有找到，则随机选择一个pinyin_list中的字符串加到string的前面或者后面
             chosen_pinyin = random.choice(pinyin_list)
             position = random.choice(["before", "after"])
             if position == "before":
@@ -743,14 +727,12 @@ def length_pinyin_policy(string):
             diff = min_length - lens
             candidates = [pinyin for pinyin in pinyin_list if len(pinyin) == diff]
             if candidates:
-                # 找到了长度为差值的字符串，随机选择一个加到string的前面或者后面
                 chosen_pinyin = random.choice(candidates)
                 position = random.choice(["before", "after"])
                 if position == "before":
                     return chosen_pinyin + string
                 else:
                     return string + chosen_pinyin
-            # 若没有找到，则随机选择一个name_list中的字符串加到string的前面或者后面
             chosen_pinyin = random.choice(pinyin_list)
             position = random.choice(["before", "after"])
             if position == "before":
@@ -929,7 +911,7 @@ def length_symbol_policy(string):
 def strucount_policy(string):
     structure_types = set()
     for char in string:
-        # 判断字符的类型，并添加到集合中
+        # Determine the type of character and add it to the set
         if char.islower():
             structure_types.add('L')
         elif char.isupper():
@@ -940,32 +922,28 @@ def strucount_policy(string):
             structure_types.add('S')
     item_structure = len(structure_types)
     min_value = float('inf')
-    # 找出键比item_structure大的项中值最小的键，计算差值
     difference = 0
     for key in structure_count.keys():
         if int(key) > item_structure:
-            # 如果找到的值比当前最小值小，则更新最小值
             if structure_count[key] < min_value:
                 difference = int(key) - item_structure
                 min_value = structure_count[key]
 
-    # 记录string中未出现的结构类型
+    # Record the structure types that do not appear in the string
     missing_types = {'L', 'U', 'D', 'S'} - structure_types
     if difference > 0:
         selected_types = random.sample(missing_types, min(difference, len(missing_types)))
     else:
         selected_types = []
 
-    # 从selected_types中的键对应的子字典中找到最小的键
     min_key = None
     for str_type in selected_types:
         min_key_in_type = min(structure_dict[str_type].keys(), key=lambda x: structure_dict[str_type][x])
         if min_key is None or min_key_in_type < min_key:
             min_key = min_key_in_type
 
-    # 将最小键添加到字符串的前面或后面
     if min_key is not None:
-        if random.choice([True, False]):  # 随机选择添加到前面还是后面
+        if random.choice([True, False]): 
             string = min_key + string
         else:
             string = string + min_key
@@ -1023,7 +1001,6 @@ def pinyin_policy(string):
     else:
         for pinyin in pinyin_list:
             if pinyin in string:
-                # 如果找到了拼音，将其从原始字符串中去掉
                 result = string.replace(pinyin, '')
                 return result
         return string
@@ -1076,12 +1053,11 @@ def symbol_policy(string):
     else:
         for symbol in symbol_list:
             if symbol in string:
-                # 如果找到了拼音，将其从原始字符串中去掉
                 result = string.replace(symbol, '')
                 return result
         return string
 
-# 将属性的名称和 Gini 系数存储在列表中
+# Store the names of features and Gini index in a list
 length_policy = [length_strucount_policy, length_name_policy, length_birthday_policy, length_pinyin_policy, length_upper_policy, length_symbol_policy]
 gini_list = [
     ("length", gini_values["length"], length_policy),
@@ -1103,16 +1079,15 @@ gini_upper = calculate_gini(upper_dict)
 gini_symbol = calculate_gini(symbol_dict)
 
 def identify_length(data1, data2):
-    # 判断两个字符串的长度是否不同
+    # Determine whether the lengths of two strings are different
     if len(data1) != len(data2):
-        return 1  # 长度发生变化，返回1
+        return 1  # Length changes, return 1
     else:
-        return 0  # 长度未发生变化，返回0
+        return 0  # The length has not changed, return 0
 
 def identify_strucount(data1, data2):
     structure_types_1 = set()
     for char in data1:
-        # 判断字符的类型，并添加到集合中
         if char.islower():
             structure_types_1.add('lowercase')
         elif char.isupper():
@@ -1124,7 +1099,6 @@ def identify_strucount(data1, data2):
     item_structure_1 = len(structure_types_1)
     structure_types_2 = set()
     for char in data2:
-        # 判断字符的类型，并添加到集合中
         if char.islower():
             structure_types_2.add('lowercase')
         elif char.isupper():
@@ -1141,10 +1115,10 @@ def identify_strucount(data1, data2):
 
 def check_contains(string1, string2):
     if len(string1) > len(string2):
-        string1, string2 = string2, string1  # 交换字符串，确保string1是较短的那个
+        string1, string2 = string2, string1  # Swap strings, ensuring that string1 is the shorter one.
 
     if string1 in string2:
-        remaining_chars = string2.replace(string1, '')  # 去除string1后剩余的字符
+        remaining_chars = string2.replace(string1, '')  # The remaining characters after removing string1
         return remaining_chars
 
 def identify_name(data1, data2, name):
@@ -1223,7 +1197,6 @@ def gen_newpsw(sixth_data, attribute_list):
     return sixth_data
 
 def remove_sensitive_data(new_data, password):
-    # 将密码替换为空字符串
     del_data = new_data
     for char in password:
         del_data = del_data.replace(char, "", 1)
@@ -1231,7 +1204,6 @@ def remove_sensitive_data(new_data, password):
     random.shuffle(del_data_list)
     del_num = len(new_data) - 12
     modified_del_data = ''.join(del_data_list[:-del_num])
-    # 随机选择将 modified_del_data 添加到 password 的前面或后面
     if random.choice([True, False]):
         return modified_del_data + password
     else:
@@ -1243,7 +1215,6 @@ with open("__file__", 'r', encoding='utf-8', errors='ignore') as f:
     for line in f:
         path = line.split('--')
         sixth_data = path[5]
-        # password = sixth_data
         seventh_data = path[6].replace('\n', '')
         password = seventh_data
         name = path[1]
@@ -1271,7 +1242,7 @@ with open("__file__", 'r', encoding='utf-8', errors='ignore') as f:
             gini_list = [(attr, gini, policy) for attr, gini, policy in gini_list if attr != "upper"]
         if symbol_change == 1:
             gini_list = [(attr, gini, policy) for attr, gini, policy in gini_list if attr != "symbol"]
-        gini_list.sort(key=lambda x: x[1], reverse=False)  # 根据 Gini 系数升序排序
+        gini_list.sort(key=lambda x: x[1], reverse=False)  # Sort in ascending order based on Gini index
         for item in gini_list[:2]:
             first_value = item[0]
             attribute_list.append(first_value)
