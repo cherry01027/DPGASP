@@ -40,7 +40,6 @@ while not found:
         for line in selected_lines:
             user = []
             path = line.split('----')
-            # Obtain the sixth and seventh data
             password = path[1]
             user.append(password)
             name = path[2]
@@ -1289,3 +1288,4 @@ with open("__file__", 'r', encoding='utf-8', errors='ignore') as f:
     with open("__newfile__", 'w', encoding="utf-8") as file:
         for item in data_list:
             file.write(str(item) + '\n')
+
